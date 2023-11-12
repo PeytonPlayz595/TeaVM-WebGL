@@ -1,4 +1,4 @@
-package org.lwjgl;
+package org.lwjgl.util;
 
 /**
  * base implementation of MD4 family style digest as outlined in "Handbook of

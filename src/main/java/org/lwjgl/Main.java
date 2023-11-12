@@ -37,6 +37,8 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
+import org.lwjgl.util.*;
+
 public class Main {
 
     public static HTMLDocument doc = null;
@@ -87,7 +89,7 @@ public class Main {
 		
 		webgl.getExtension("EXT_texture_filter_anisotropic");
 
-		org.lwjgl.opengl.WebGL.webgl = webgl;
+		org.lwjgl.opengl.webgl.WebGL.webgl = webgl;
 		
 		win.addEventListener("contextmenu", Mouse.contextmenu = new EventListener<MouseEvent>() {
 			@Override

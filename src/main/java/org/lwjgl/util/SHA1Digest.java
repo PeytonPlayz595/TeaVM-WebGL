@@ -1,4 +1,4 @@
-package org.lwjgl;
+package org.lwjgl.util;
 
 /**
  * implementation of SHA-1 as outlined in "Handbook of Applied Cryptography",

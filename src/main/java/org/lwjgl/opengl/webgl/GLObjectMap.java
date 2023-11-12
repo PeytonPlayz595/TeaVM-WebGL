@@ -1,4 +1,4 @@
-package org.lwjgl.opengl;
+package org.lwjgl.opengl.webgl;
 
 public class GLObjectMap<T> {
 	private Object[] values;

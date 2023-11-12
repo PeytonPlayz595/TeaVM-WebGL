@@ -1,9 +1,7 @@
-package org.lwjgl.opengl;
-
-import org.lwjgl.opengl.WebGL;
+package org.lwjgl.opengl.webgl;
 
 import org.lwjgl.util.vector.*;
-import static org.lwjgl.opengl.WebGL.*;
+import static org.lwjgl.opengl.webgl.WebGL.*;
 import static org.lwjgl.opengl.GL11.*;
 
 public class OpenGLFunctionShader {

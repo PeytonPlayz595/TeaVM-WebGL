@@ -1,4 +1,4 @@
-package org.lwjgl.opengl;
+package org.lwjgl.opengl.webgl;
 
 import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.EventListener;
@@ -26,6 +26,7 @@ import org.teavm.jso.dom.html.HTMLImageElement;
 import java.nio.*;
 
 import org.lwjgl.Main;
+import org.lwjgl.opengl.webgl.util.BufferedImage;
 import static org.lwjgl.opengl.GL11.*;
 import static org.teavm.jso.webgl.WebGLRenderingContext.*;
 import static org.lwjgl.Main.WebGL.*;

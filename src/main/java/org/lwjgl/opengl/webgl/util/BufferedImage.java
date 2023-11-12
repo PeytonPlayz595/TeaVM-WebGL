@@ -1,4 +1,4 @@
-package org.lwjgl.opengl;
+package org.lwjgl.opengl.webgl.util;
 
 public class BufferedImage {
 

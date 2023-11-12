@@ -3,7 +3,9 @@ package org.lwjgl.opengl;
 import java.util.*;
 import java.nio.*;
 
-import static org.lwjgl.opengl.WebGL.*;
+import static org.lwjgl.opengl.webgl.WebGL.*;
+
+import org.lwjgl.opengl.webgl.*;
 import org.lwjgl.util.vector.*;
 
 public class GL11 {

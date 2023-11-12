@@ -33,6 +33,10 @@ dependencies {
     implementation 'com.jcraft:jzlib:1.1.3'
 }
 
+tasks.withType(JavaCompile) {
+    options.incremental = false
+}
+
 teavm {
    
    compileScopes = null;

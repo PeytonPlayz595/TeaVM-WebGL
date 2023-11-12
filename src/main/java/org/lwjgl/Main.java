@@ -1,5 +1,10 @@
 package org.lwjgl;
 
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.HashMap;
+
 import org.teavm.interop.Async;
 import org.teavm.interop.AsyncCallback;
 import org.teavm.jso.JSBody;
@@ -23,20 +28,28 @@ import org.teavm.jso.typedarrays.Uint8ClampedArray;
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.webgl.WebGLRenderingContext;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
+import com.jcraft.jzlib.InflaterInputStream;
+import org.teavm.jso.ajax.XMLHttpRequest;
+import org.teavm.jso.ajax.ReadyStateChangeHandler;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 
 public class Main {
 
     public static HTMLDocument doc = null;
 	public static HTMLElement parent = null;
 	public static HTMLCanvasElement canvas = null;
+	public static HTMLCanvasElement imageLoadCanvas = null;
+	public static CanvasRenderingContext2D imageLoadContext = null;
 	public static CanvasRenderingContext2D canvasContext = null;
 	public static HTMLCanvasElement canvasBack = null;
 	public static WebGL webgl = null;
 	public static Window win = null;
+
+	private static byte[] loadedPackage = null;
 
     public static void main(String args[]) {
         /*
@@ -73,6 +86,8 @@ public class Main {
 		setContext(webgl);
 		
 		webgl.getExtension("EXT_texture_filter_anisotropic");
+
+		org.lwjgl.opengl.WebGL.webgl = webgl;
 		
 		win.addEventListener("contextmenu", Mouse.contextmenu = new EventListener<MouseEvent>() {
 			@Override
@@ -165,6 +180,95 @@ public class Main {
 		Mouse.mouseEvents.clear();
 		Keyboard.keyEvents.clear();
     }
+
+	/*
+	* Downloads the assets for the program by file name
+	* FILE HAS TO BE COMPILED USING LAX1DUDE'S EPK COMPILER!
+	*/
+	@Async
+	public static native String downloadAssetPack(String filename);
+
+	public static void downloadAssetPack(String filename, final AsyncCallback<String> cb) {
+		final XMLHttpRequest request = XMLHttpRequest.create();
+		request.setResponseType("arraybuffer");
+		request.open("GET", filename, true);
+		request.setOnReadyStateChange(new ReadyStateChangeHandler() {
+			@Override
+			public void stateChanged() {
+				if(request.getReadyState() == XMLHttpRequest.DONE) {
+					Uint8Array bl = Uint8Array.create((ArrayBuffer)request.getResponse());
+					loadedPackage = new byte[bl.getByteLength()];
+					for(int i = 0; i < loadedPackage.length; ++i) {
+						loadedPackage[i] = (byte) bl.get(i);
+					}
+					cb.complete("yee");
+				}
+			}
+		});
+		request.send();
+
+		try {
+			install(loadedPackage);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static final HashMap<String, byte[]> filePool = new HashMap();
+
+	public static final void install(byte[] pkg) throws LWJGLException, IOException {
+		ByteArrayInputStream in2 = new ByteArrayInputStream(pkg);
+		DataInputStream in = new DataInputStream(in2);
+		byte[] header = new byte[8];
+		in.read(header);
+		if (!"EAGPKG!!".equals(new String(header, Charset.forName("UTF-8")))) {
+			throw new LWJGLException("invalid file! FILE HAS TO BE COMPILED WITH LAX1DUDE'S EPK COMPILER!");
+		}
+		in.readUTF();
+		in = new DataInputStream(new InflaterInputStream(in2));
+		String s = null;
+		SHA1Digest dg = new SHA1Digest();
+		while ("<file>".equals(s = in.readUTF())) {
+			String path = in.readUTF();
+			byte[] digest = new byte[20];
+			byte[] digest2 = new byte[20];
+			in.read(digest);
+			int len = in.readInt();
+			byte[] file = new byte[len];
+			in.read(file);
+			if (filePool.containsKey(path)) {
+				continue;
+			}
+			dg.update(file, 0, len);
+			dg.doFinal(digest2, 0);
+			if (!Arrays.equals(digest, digest2)) {
+				throw new LWJGLException("invalid file hash for " + path);
+			}
+			filePool.put(path, file);
+			if (!"</file>".equals(in.readUTF())) {
+				throw new LWJGLException("invalid file! FILE HAS TO BE COMPILED WITH LAX1DUDE'S EPK COMPILER!");
+			}
+		}
+		if (in.available() > 0 || !" end".equals(s)) {
+			throw new LWJGLException("invalid file! FILE HAS TO BE COMPILED WITH LAX1DUDE'S EPK COMPILER!");
+		}
+	}
+
+	public static final byte[] getResource(String path) {
+		if (path.startsWith("/")) {
+			path = path.substring(1);
+		}
+		return filePool.get(path);
+	}
+
+	public static final String fileContents(String path) {
+		byte[] contents = getResource(path);
+		if(contents == null) {
+			return null;
+		}else {
+			return new String(contents, Charset.forName("UTF-8"));
+		}
+	}
 
     @JSBody(params = { }, script = "return {antialias: false, depth: true, powerPreference: \"high-performance\", desynchronized: false, preserveDrawingBuffer: false, premultipliedAlpha: false, alpha: false};")
 	public static native JSObject getContext();

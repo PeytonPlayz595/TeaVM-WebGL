@@ -892,6 +892,11 @@ public class GL11 extends RealOpenGLEnums {
 		_wglTexSubImage2D(pp1, p2, p3, p4, p5, p6, _wGL_RGBA, _wGL_UNSIGNED_BYTE, p9);
 	}
 
+	public static final void glDeleteTextures(IntBuffer p1) {
+		int p2 = p1.get();
+		_wglDeleteTextures(texObjects.free(p2));
+	}
+
 	public static final void glDeleteTextures(int p1) {
 		_wglDeleteTextures(texObjects.free(p1));
 	}

@@ -55,6 +55,8 @@ public class Main {
 
 	private static byte[] loadedPackage = null;
 
+	private static JSObject fullscreenQuery = null;
+
     public static void main(String args[]) {
         /*
 		 * You can remove this function...
@@ -181,6 +183,8 @@ public class Main {
 				Mouse.setGrabbed(true);
 			}
 		});
+
+		fullscreenQuery = fullscreenMediaQuery();
 		
 		Mouse.mouseEvents.clear();
 		Keyboard.keyEvents.clear();
@@ -275,11 +279,27 @@ public class Main {
 		}
 	}
 
+	public static boolean isFullscreen() {
+		return mediaQueryMatches(fullscreenQuery);
+	}
+
     @JSBody(params = { }, script = "return {antialias: false, depth: true, powerPreference: \"high-performance\", desynchronized: false, preserveDrawingBuffer: false, premultipliedAlpha: false, alpha: false};")
 	public static native JSObject getContext();
 
 	@JSBody(params = { "obj" }, script = "window.currentContext = obj;")
 	private static native int setContext(JSObject obj);
+
+	@JSBody(params = { }, script = "document.exitFullscreen();")
+	public static native void exitFullscreen();
+
+	@JSBody(params = { "element" }, script = "element.requestFullscreen();")
+	public static native void requestFullscreen(HTMLElement element);
+
+	@JSBody(params = { "mediaQuery" }, script = "return mediaQuery.matches;")
+	private static native boolean mediaQueryMatches(JSObject mediaQuery);
+
+	@JSBody(params = {}, script = "return window.matchMedia('(display-mode: fullscreen)');")
+	private static native JSObject fullscreenMediaQuery();
 
 	public interface WebGL extends WebGLRenderingContext {
 		int TEXTURE_MAX_LEVEL = 0x0000813D;

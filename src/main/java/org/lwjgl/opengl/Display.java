@@ -10,6 +10,7 @@ public class Display {
     public static int width = 0;
 	public static int height = 0;
     public static boolean isWindowFocused;
+	private static JSObject fullscreenQuery = null;
 
     @JSBody(params = { "obj" }, script = "if(obj.commit) obj.commit();")
 	private static native int commitContext(JSObject obj);
@@ -57,6 +58,15 @@ public class Display {
 		}
 		return h;
     }
+
+	public static void setFullscreen(boolean b) {
+		if(b & !Main.isFullscreen()) {
+			Main.requestFullscreen(Main.canvas);
+		}
+		if(!b & Main.isFullscreen()) {
+			Main.exitFullscreen();
+		}
+	}
 
     public static void create() throws LWJGLException {
     }

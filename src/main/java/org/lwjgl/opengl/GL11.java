@@ -616,6 +616,17 @@ public class GL11 extends RealOpenGLEnums {
 		}
 	}
 
+	private static final Map<Integer,String> stringCache = new HashMap();
+
+	public static final String glGetString(int param) {
+		String str = stringCache.get(param);
+		if(str == null) {
+			str = _wglGetString(param);
+			stringCache.put(param, str);
+		}
+		return str;
+	}
+
 	public static final void glGetInteger(int p1, int[] p2) {
 		if (p1 == GL_VIEWPORT) {
 			_wglGetParameter(_wGL_VIEWPORT, 4, p2);

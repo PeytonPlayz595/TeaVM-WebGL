@@ -90,6 +90,7 @@ public class Main {
 		setContext(webgl);
 		
 		anisotropicFilteringSupported = webgl.getExtension("EXT_texture_filter_anisotropic") != null;
+		org.lwjgl.opengl.webgl.WebGL.hasDebugRenderInfoExt = webgl.getExtension("WEBGL_debug_renderer_info") != null;
 
 		org.lwjgl.opengl.webgl.WebGL.webgl = webgl;
 		

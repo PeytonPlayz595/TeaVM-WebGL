@@ -124,6 +124,8 @@ public class WebGL {
 	public static final int _wGL_FRAMEBUFFER = FRAMEBUFFER;
 	public static final int _wGL_POLYGON_OFFSET_FILL = GL_POLYGON_OFFSET_FILL;
 
+	public static boolean hasDebugRenderInfoExt = false;
+
     public static final class TextureGL { 
 		protected final WebGLTexture obj;
 		public int w = -1;
@@ -217,6 +219,29 @@ public class WebGL {
 	}
 	public static final void _wglDisable(int p1) {
 		webgl.disable(p1);
+	}
+	public static final String _wglGetString(int param) {
+		if(hasDebugRenderInfoExt) {
+			String s;
+			switch(param) {
+			case 0x1f00: // VENDOR
+				s = webgl.getParameterString(0x9245); // UNMASKED_VENDOR_WEBGL
+				if(s == null) {
+					s = webgl.getParameterString(0x1f00); // VENDOR
+				}
+				return s;
+			case 0x1f01: // RENDERER
+				s = webgl.getParameterString(0x9246); // UNMASKED_RENDERER_WEBGL
+				if(s == null) {
+					s = webgl.getParameterString(0x1f01); // RENDERER
+				}
+				return s;
+			default:
+				return webgl.getParameterString(param);
+			}
+		}else {
+			return webgl.getParameterString(param);
+		}
 	}
 	public static final int _wglGetError() {
 		return webgl.getError();

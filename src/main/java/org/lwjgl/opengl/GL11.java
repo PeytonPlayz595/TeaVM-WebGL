@@ -8,7 +8,7 @@ import static org.lwjgl.opengl.webgl.WebGL.*;
 import org.lwjgl.opengl.webgl.*;
 import org.lwjgl.util.vector.*;
 
-public class GL11 {
+public class GL11 extends RealOpenGLEnums {
 
 	public static final int GL_ZERO = RealOpenGLEnums.GL_ZERO;
 	public static final int GL_ONE = RealOpenGLEnums.GL_ONE;

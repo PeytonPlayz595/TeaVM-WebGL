@@ -41,6 +41,8 @@ import org.lwjgl.util.*;
 
 public class Main {
 
+	public static boolean anisotropicFilteringSupported = false;
+
     public static HTMLDocument doc = null;
 	public static HTMLElement parent = null;
 	public static HTMLCanvasElement canvas = null;
@@ -87,7 +89,7 @@ public class Main {
 		}
 		setContext(webgl);
 		
-		webgl.getExtension("EXT_texture_filter_anisotropic");
+		anisotropicFilteringSupported = webgl.getExtension("EXT_texture_filter_anisotropic") != null;
 
 		org.lwjgl.opengl.webgl.WebGL.webgl = webgl;
 		

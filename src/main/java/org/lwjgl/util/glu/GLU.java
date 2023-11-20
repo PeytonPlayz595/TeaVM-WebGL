@@ -187,11 +187,7 @@ public class GLU {
 	public static final int GLU_EDGE_FLAG   = GLU_TESS_EDGE_FLAG;
 
     public static void gluOrtho2D(float left, float right, float bottom, float top) {
-        GL11.glOrtho((double)left, (double)right, (double)bottom, (double)top, (double)-1.0, (double)1.0);
-    }
-
-    public static void gluOrtho2D(double left, double right, double bottom, double top) {
-        GL11.glOrtho(left, right, bottom, top, (double)-1.0, (double)1.0);
+        GL11.glOrtho(left, right, bottom, top, (float)-1.0, (float)1.0);
     }
 
     public static void gluPerspective(float fovy, float aspect, float zNear, float zFar) {

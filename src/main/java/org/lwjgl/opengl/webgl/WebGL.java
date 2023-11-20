@@ -26,6 +26,7 @@ import org.teavm.jso.dom.html.HTMLImageElement;
 import java.nio.*;
 
 import org.lwjgl.Main;
+import org.lwjgl.opengl.RealOpenGLEnums;
 import org.lwjgl.opengl.webgl.util.BufferedImage;
 import static org.lwjgl.opengl.GL11.*;
 import static org.teavm.jso.webgl.WebGLRenderingContext.*;
@@ -37,9 +38,9 @@ public class WebGL {
     public static final int _wGL_TEXTURE_2D = GL_TEXTURE_2D;
 	public static final int _wGL_DEPTH_TEST = GL_DEPTH_TEST;
 	public static final int _wGL_LEQUAL = GL_LEQUAL;
-	public static final int _wGL_GEQUAL = GL_GEQUAL;
+	public static final int _wGL_GEQUAL = RealOpenGLEnums.GL_GEQUAL;
 	public static final int _wGL_GREATER = GL_GREATER;
-	public static final int _wGL_LESS = GL_LESS;
+	public static final int _wGL_LESS = RealOpenGLEnums.GL_LESS;
 	public static final int _wGL_BACK = GL_BACK;
 	public static final int _wGL_FRONT = GL_FRONT;
 	public static final int _wGL_FRONT_AND_BACK = GL_FRONT_AND_BACK;
@@ -47,11 +48,11 @@ public class WebGL {
 	public static final int _wGL_DEPTH_BUFFER_BIT = GL_DEPTH_BUFFER_BIT;
 	public static final int _wGL_BLEND = GL_BLEND;
 	public static final int _wGL_RGBA = GL_RGBA;
-	public static final int _wGL_RGB = GL_RGB;
-	public static final int _wGL_RGB8 = GL_RGB8;
-	public static final int _wGL_RGBA8 = GL_RGBA8;
+	public static final int _wGL_RGB = RealOpenGLEnums.GL_RGB;
+	public static final int _wGL_RGB8 = RealOpenGLEnums.GL_RGB8;
+	public static final int _wGL_RGBA8 = RealOpenGLEnums.GL_RGBA8;
 	public static final int _wGL_UNSIGNED_BYTE = GL_UNSIGNED_BYTE;
-	public static final int _wGL_UNSIGNED_SHORT = GL_UNSIGNED_SHORT;
+	public static final int _wGL_UNSIGNED_SHORT = RealOpenGLEnums.GL_UNSIGNED_SHORT;
 	public static final int _wGL_SRC_ALPHA = GL_SRC_ALPHA;
 	public static final int _wGL_ONE_MINUS_SRC_ALPHA = GL_ONE_MINUS_SRC_ALPHA;
 	public static final int _wGL_ONE_MINUS_DST_COLOR = GL_ONE_MINUS_DST_COLOR;
@@ -65,7 +66,7 @@ public class WebGL {
 	public static final int _wGL_SRC_COLOR = GL_SRC_COLOR;
 	public static final int _wGL_ONE = GL_ONE;
 	public static final int _wGL_NEAREST = GL_NEAREST;
-	public static final int _wGL_CLAMP = GL_CLAMP_TO_EDGE;
+	public static final int _wGL_CLAMP = RealOpenGLEnums.GL_CLAMP_TO_EDGE;
 	public static final int _wGL_TEXTURE_WRAP_S = GL_TEXTURE_WRAP_S;
 	public static final int _wGL_TEXTURE_WRAP_T = GL_TEXTURE_WRAP_T;
 	public static final int _wGL_REPEAT = GL_REPEAT;
@@ -85,12 +86,12 @@ public class WebGL {
 	public static final int _wGL_TEXTURE2 = GL_TEXTURE2;
 	public static final int _wGL_TEXTURE3 = GL_TEXTURE3;
 	public static final int _wGL_VIEWPORT = GL_VIEWPORT;
-	public static final int _wGL_VERTEX_SHADER = GL_VERTEX_SHADER;
-	public static final int _wGL_FRAGMENT_SHADER = GL_FRAGMENT_SHADER;
-	public static final int _wGL_ARRAY_BUFFER = GL_ARRAY_BUFFER;
-	public static final int _wGL_ELEMENT_ARRAY_BUFFER = GL_ELEMENT_ARRAY_BUFFER;
-	public static final int _wGL_STATIC_DRAW = GL_STATIC_DRAW;
-	public static final int _wGL_DYNAMIC_DRAW = GL_DYNAMIC_DRAW;
+	public static final int _wGL_VERTEX_SHADER = RealOpenGLEnums.GL_VERTEX_SHADER;
+	public static final int _wGL_FRAGMENT_SHADER = RealOpenGLEnums.GL_FRAGMENT_SHADER;
+	public static final int _wGL_ARRAY_BUFFER = RealOpenGLEnums.GL_ARRAY_BUFFER;
+	public static final int _wGL_ELEMENT_ARRAY_BUFFER = RealOpenGLEnums.GL_ELEMENT_ARRAY_BUFFER;
+	public static final int _wGL_STATIC_DRAW = RealOpenGLEnums.GL_STATIC_DRAW;
+	public static final int _wGL_DYNAMIC_DRAW = RealOpenGLEnums.GL_DYNAMIC_DRAW;
 	public static final int _wGL_INVALID_ENUM = GL_INVALID_ENUM;
 	public static final int _wGL_INVALID_VALUE= GL_INVALID_VALUE;
 	public static final int _wGL_INVALID_OPERATION = GL_INVALID_OPERATION;
@@ -108,10 +109,10 @@ public class WebGL {
 	public static final int _wGL_NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST;
 	public static final int _wGL_TEXTURE_MAX_LEVEL = GL_TEXTURE_MAX_LEVEL; 
 	public static final int _wGL_UNSIGNED_INT_24_8 = UNSIGNED_INT_24_8;
-	public static final int _wGL_UNSIGNED_INT = GL_UNSIGNED_INT;
+	public static final int _wGL_UNSIGNED_INT = RealOpenGLEnums.GL_UNSIGNED_INT;
 	public static final int _wGL_ANY_SAMPLES_PASSED = ANY_SAMPLES_PASSED; 
-	public static final int _wGL_QUERY_RESULT = GL_QUERY_RESULT;
-	public static final int _wGL_QUERY_RESULT_AVAILABLE = GL_QUERY_RESULT_AVAILABLE;
+	public static final int _wGL_QUERY_RESULT = RealOpenGLEnums.GL_QUERY_RESULT;
+	public static final int _wGL_QUERY_RESULT_AVAILABLE = RealOpenGLEnums.GL_QUERY_RESULT_AVAILABLE;
 	public static final int _wGL_TEXTURE_MAX_ANISOTROPY = TEXTURE_MAX_ANISOTROPY_EXT;
 	public static final int _wGL_DEPTH24_STENCIL8 = DEPTH24_STENCIL8;
 	public static final int _wGL_DEPTH_COMPONENT32F = DEPTH_COMPONENT32F;
@@ -330,10 +331,10 @@ public class WebGL {
 		return webgl.getProgramInfoLog(p1.obj);
 	}
 	public static final boolean _wglGetShaderCompiled(ShaderGL p1) {
-		return webgl.getShaderParameteri(p1.obj, GL_COMPILE_STATUS) == 1;
+		return webgl.getShaderParameteri(p1.obj, RealOpenGLEnums.GL_COMPILE_STATUS) == 1;
 	}
 	public static final boolean _wglGetProgramLinked(ProgramGL p1) {
-		return webgl.getProgramParameteri(p1.obj, GL_LINK_STATUS) == 1;
+		return webgl.getProgramParameteri(p1.obj, RealOpenGLEnums.GL_LINK_STATUS) == 1;
 	}
 	public static final void _wglDeleteShader(ShaderGL p1) {
 		webgl.deleteShader(p1.obj);
@@ -607,6 +608,14 @@ public class WebGL {
 		}else {
 			toLoad.setSrc(src);
 		}
+	}
+
+	public static final boolean anisotropicFilteringSupported() {
+		return Main.anisotropicFilteringSupported;
+	}
+
+	public static final boolean glNeedsAnisotropicFix() {
+		return Main.anisotropicFilteringSupported && DetectAnisotropicGlitch.hasGlitch();
 	}
 
     @JSBody(params = { "buf", "mime" }, script = "return URL.createObjectURL(new Blob([buf], {type: mime}));")

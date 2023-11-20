@@ -1280,7 +1280,7 @@ public class GL11 extends RealOpenGLEnums {
 		return _wglGetQueryObjecti(q, _wGL_QUERY_RESULT_AVAILABLE) >= 0;
 	}
 
-	public static final int glGenTextures(int i) {
+	public static final int glGenTextures(int IntBuffer) {
 		return texObjects.register(_wglGenTextures());
 	}
 

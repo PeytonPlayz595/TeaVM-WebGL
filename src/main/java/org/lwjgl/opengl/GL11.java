@@ -628,15 +628,14 @@ public class GL11 extends RealOpenGLEnums {
 	}
 
 	public static final void glGetInteger(int p1, IntBuffer p2) {
-		int[] array = p2.array();
 		if(p1 == GL_VIEWPORT) {
-			_wglGetParameter(_wGL_VIEWPORT, 4, array);
+			_wglGetParameter(_wGL_VIEWPORT, p2);
 		}
 	}
 
 	public static final void glGetInteger(int p1, int[] p2) {
 		if (p1 == GL_VIEWPORT) {
-			_wglGetParameter(_wGL_VIEWPORT, 4, p2);
+			_wglGetParameter(_wGL_VIEWPORT, p2);
 		}
 	}
 

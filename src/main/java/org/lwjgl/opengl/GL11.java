@@ -400,6 +400,33 @@ public class GL11 extends RealOpenGLEnums {
 		res.m33 = 1.0f;
 	}
 
+	public static final void glOrtho(double left1, double right1, double bottom1, double top1, double zNear1, double zFar1) {
+		float left = (float)left1;
+		float right = (float)right1;
+		float bottom = (float)bottom1;
+		float top = (float)top1;
+		float zNear = (float)zNear1;
+		float zFar = (float)zFar1;
+
+		Matrix4f res = getMatrix();
+		res.m00 = 2.0f / (right - left);
+		res.m01 = 0.0f;
+		res.m02 = 0.0f;
+		res.m03 = 0.0f;
+		res.m10 = 0.0f;
+		res.m11 = 2.0f / (top - bottom);
+		res.m12 = 0.0f;
+		res.m13 = 0.0f;
+		res.m20 = 0.0f;
+		res.m21 = 0.0f;
+		res.m22 = 2.0f / (zFar - zNear);
+		res.m23 = 0.0f;
+		res.m30 = -(right + left) / (right - left);
+		res.m31 = -(top + bottom) / (top - bottom);
+		res.m32 = (zFar + zNear) / (zFar - zNear);
+		res.m33 = 1.0f;
+	}
+
 	private static final Vector3f deevis = new Vector3f();
 
 	public static final void glTranslatef(float p1, float p2, float p3) {

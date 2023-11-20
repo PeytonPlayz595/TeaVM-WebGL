@@ -433,7 +433,7 @@ public class GL11 extends RealOpenGLEnums {
 		deevis.set(p1, p2, p3);
 		getMatrix().translate(deevis);
 		if (isCompilingDisplayList) {
-			System.err.println("matrix-mode functions are not supported while recording display list!");
+			throw new IllegalArgumentException("matrix-mode functions are not supported while recording display list!");
 		}
 	}
 
@@ -596,7 +596,7 @@ public class GL11 extends RealOpenGLEnums {
 		deevis.set(p2, p3, p4);
 		getMatrix().rotate(p1 * toRad, deevis);
 		if (isCompilingDisplayList) {
-			System.err.println("matrix-mode functions are not supported while recording display list!");
+			throw new IllegalArgumentException("matrix-mode functions are not supported while recording display list!");
 		}
 	}
 
@@ -666,11 +666,19 @@ public class GL11 extends RealOpenGLEnums {
 		}
 	}
 
+	public static final void glScaled(double p1, double p2, double p3) {
+		deevis.set((float)p1, (float)p2, (float)p3);
+		getMatrix().scale(deevis);
+		if (isCompilingDisplayList) {
+			throw new IllegalArgumentException("matrix-mode functions are not supported while recording display list!");
+		}
+	}
+
 	public static final void glScalef(float p1, float p2, float p3) {
 		deevis.set(p1, p2, p3);
 		getMatrix().scale(deevis);
 		if (isCompilingDisplayList) {
-			System.err.println("matrix-mode functions are not supported while recording display list!");
+			throw new IllegalArgumentException("matrix-mode functions are not supported while recording display list!");
 		}
 	}
 

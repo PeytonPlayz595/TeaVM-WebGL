@@ -60,14 +60,21 @@ public class Display {
     }
 
 	public static void setFullscreen(boolean b) {
-		if(b & !Main.isFullscreen()) {
+		if(b & !isFullscreen()) {
 			Main.requestFullscreen(Main.canvas);
 		}
-		if(!b & Main.isFullscreen()) {
+		if(!b & isFullscreen()) {
 			Main.exitFullscreen();
 		}
 	}
 
+	public static boolean isFullscreen() {
+		return Main.isFullscreen();
+	}
+
     public static void create() throws LWJGLException {
+    }
+
+	public static void destroy() throws LWJGLException {
     }
 }

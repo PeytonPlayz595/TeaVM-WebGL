@@ -95,6 +95,9 @@ public class Mouse {
     public static void create() throws LWJGLException {
     }
 
+    public static void destroy() throws LWJGLException {
+    }
+
     public static void setNativeCursor(Object o) throws LWJGLException {
 	}
 

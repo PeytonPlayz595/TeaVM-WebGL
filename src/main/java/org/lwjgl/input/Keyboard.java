@@ -6,6 +6,8 @@ import org.teavm.jso.dom.events.KeyboardEvent;
 
 import java.util.LinkedList;
 
+import org.lwjgl.LWJGLException;
+
 public class Keyboard {
 
     /**
@@ -213,5 +215,11 @@ public class Keyboard {
 
     public static boolean isKeyDown(int i) {
         return keyStates[i];
+    }
+
+	public static void create() throws LWJGLException {
+    }
+
+    public static void destroy() throws LWJGLException {
     }
 }

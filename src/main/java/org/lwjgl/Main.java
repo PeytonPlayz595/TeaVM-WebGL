@@ -96,80 +96,6 @@ public class Main {
 
 		org.lwjgl.opengl.webgl.WebGL.webgl = webgl;
 		
-		win.addEventListener("contextmenu", Mouse.contextmenu = new EventListener<MouseEvent>() {
-			@Override
-			public void handleEvent(MouseEvent evt) {
-				evt.preventDefault();
-				evt.stopPropagation();
-			}
-		});
-		canvas.addEventListener("mousedown", Mouse.mousedown = new EventListener<MouseEvent>() {
-			@Override
-			public void handleEvent(MouseEvent evt) {
-				int b = evt.getButton();
-				Mouse.buttonStates[b == 1 ? 2 : (b == 2 ? 1 : b)] = true;
-				Mouse.mouseEvents.add(evt);
-				evt.preventDefault();
-				evt.stopPropagation();
-				Mouse.setGrabbed(true);
-			}
-		});
-		canvas.addEventListener("mouseup", Mouse.mouseup = new EventListener<MouseEvent>() {
-			@Override
-			public void handleEvent(MouseEvent evt) {
-				int b = evt.getButton();
-				Mouse.buttonStates[b == 1 ? 2 : (b == 2 ? 1 : b)] = false;
-				Mouse.mouseEvents.add(evt);
-				evt.preventDefault();
-				evt.stopPropagation();
-			}
-		});
-		canvas.addEventListener("mousemove", Mouse.mousemove = new EventListener<MouseEvent>() {
-			@Override
-			public void handleEvent(MouseEvent evt) {
-				Mouse.x = Mouse.getOffsetX(evt);
-				Mouse.y = canvas.getClientHeight() - Mouse.getOffsetY(evt);
-				Mouse.DX += evt.getMovementX();
-				Mouse.DY += -evt.getMovementY();
-				evt.preventDefault();
-				evt.stopPropagation();
-			}
-		});
-		win.addEventListener("keydown", Keyboard.keydown = new EventListener<KeyboardEvent>() {
-			@Override
-			public void handleEvent(KeyboardEvent evt) {
-				Keyboard.keyStates[Keyboard.remapKey(Keyboard.getWhich(evt))] = true;
-				Keyboard.keyEvents.add(evt);
-				evt.preventDefault();
-				evt.stopPropagation();
-				Mouse.setGrabbed(true);
-			}
-		});
-		win.addEventListener("keyup", Keyboard.keyup = new EventListener<KeyboardEvent>() {
-			@Override
-			public void handleEvent(KeyboardEvent evt) {
-				Keyboard.keyStates[Keyboard.remapKey(Keyboard.getWhich(evt))] = false;
-				Keyboard.keyEvents.add(evt);
-				evt.preventDefault();
-				evt.stopPropagation();
-			}
-		});
-		win.addEventListener("keypress", Keyboard.keypress = new EventListener<KeyboardEvent>() {
-			@Override
-			public void handleEvent(KeyboardEvent evt) {
-				if(Keyboard.enableRepeatEvents && evt.isRepeat()) Keyboard.keyEvents.add(evt);
-				evt.preventDefault();
-				evt.stopPropagation();
-			}
-		});
-		canvas.addEventListener("wheel", Mouse.wheel = new EventListener<WheelEvent>() {
-			@Override
-			public void handleEvent(WheelEvent evt) {
-				Mouse.mouseEvents.add(evt);
-				evt.preventDefault();
-				evt.stopPropagation();
-			}
-		});
 		win.addEventListener("blur", new EventListener<WheelEvent>() {
 			@Override
 			public void handleEvent(WheelEvent evt) {
@@ -185,9 +111,6 @@ public class Main {
 		});
 
 		fullscreenQuery = fullscreenMediaQuery();
-		
-		Mouse.mouseEvents.clear();
-		Keyboard.keyEvents.clear();
     }
 
 	/*

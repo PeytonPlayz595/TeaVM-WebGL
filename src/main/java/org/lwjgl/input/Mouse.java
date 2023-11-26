@@ -12,24 +12,70 @@ import java.util.LinkedList;
 
 public class Mouse {
 
-    public static LinkedList<MouseEvent> mouseEvents = new LinkedList();
-    public static boolean[] buttonStates = new boolean[8];
+    private static LinkedList<MouseEvent> mouseEvents = new LinkedList();
+    private static boolean[] buttonStates = new boolean[8];
     private static MouseEvent currentEvent = null;
 
-    public static EventListener contextmenu = null;
-    public static EventListener wheel = null;
-    public static EventListener mousedown = null;
-	public static EventListener mouseup = null;
-	public static EventListener mousemove = null;
+    private static EventListener<MouseEvent> contextmenu = new EventListener<MouseEvent>() {
+		@Override
+		public void handleEvent(MouseEvent evt) {
+			evt.preventDefault();
+			evt.stopPropagation();
+		}
+	};
 
-    public static int x, y;
-    public static double DX, DY;
+    private static EventListener wheel = new EventListener<WheelEvent>() {
+		@Override
+		public void handleEvent(WheelEvent evt) {
+			mouseEvents.add(evt);
+			evt.preventDefault();
+			evt.stopPropagation();
+		}
+	};
+
+    private static EventListener mousedown = new EventListener<MouseEvent>() {
+		@Override
+		public void handleEvent(MouseEvent evt) {
+			int b = evt.getButton();
+			buttonStates[b == 1 ? 2 : (b == 2 ? 1 : b)] = true;
+			mouseEvents.add(evt);
+			evt.preventDefault();
+			evt.stopPropagation();
+			setGrabbed(true);
+		}
+	};
+
+	private static EventListener mouseup = new EventListener<MouseEvent>() {
+		@Override
+		public void handleEvent(MouseEvent evt) {
+			int b = evt.getButton();
+			buttonStates[b == 1 ? 2 : (b == 2 ? 1 : b)] = false;
+			mouseEvents.add(evt);
+			evt.preventDefault();
+			evt.stopPropagation();
+		}
+	};
+
+	private static EventListener mousemove = new EventListener<MouseEvent>() {
+		@Override
+		public void handleEvent(MouseEvent evt) {
+			x = getOffsetX(evt);
+			y = Main.canvas.getClientHeight() - getOffsetY(evt);
+			DX += evt.getMovementX();
+			DY += -evt.getMovementY();
+			evt.preventDefault();
+			evt.stopPropagation();
+		}
+	};
+
+    private static int x, y;
+    private static double DX, DY;
 
     @JSBody(params = { "m" }, script = "return m.offsetX;")
-	public static native int getOffsetX(MouseEvent m);
+	private static native int getOffsetX(MouseEvent m);
 	
 	@JSBody(params = { "m" }, script = "return m.offsetY;")
-	public static native int getOffsetY(MouseEvent m);
+	private static native int getOffsetY(MouseEvent m);
 
     public static int getDX() {
         double dx = DX;
@@ -93,9 +139,21 @@ public class Mouse {
     }
 
     public static void create() throws LWJGLException {
+        Main.win.addEventListener("contextmenu", contextmenu);
+		Main.canvas.addEventListener("mousedown", mousedown);
+		Main.canvas.addEventListener("mouseup", mouseup);
+		Main.canvas.addEventListener("mousemove", mousemove);
+		Main.canvas.addEventListener("wheel", wheel);
+        mouseEvents.clear();
     }
 
     public static void destroy() throws LWJGLException {
+        Main.win.removeEventListener("contextmenu", contextmenu);
+		Main.canvas.removeEventListener("mousedown", mousedown);
+		Main.canvas.removeEventListener("mouseup", mouseup);
+		Main.canvas.removeEventListener("mousemove", mousemove);
+		Main.canvas.removeEventListener("wheel", wheel);
+        mouseEvents.clear();
     }
 
     public static void setNativeCursor(Object o) throws LWJGLException {

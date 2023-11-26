@@ -3,6 +3,9 @@ package org.lwjgl.opengl;
 import java.util.*;
 import java.nio.*;
 
+import org.teavm.jso.typedarrays.ArrayBuffer;
+import org.teavm.jso.typedarrays.Int32Array;
+
 import static org.lwjgl.opengl.webgl.WebGL.*;
 
 import org.lwjgl.opengl.webgl.*;
@@ -748,13 +751,6 @@ public class GL11 extends RealOpenGLEnums {
 
 	}
 
-	public static final void glNormal3f(float p1, float p2, float p3) {
-		float len = (float) Math.sqrt(p1 * p1 + p2 * p2 + p3 * p3);
-		normalX = p1 / len;
-		normalY = p2 / len;
-		normalZ = p3 / len;
-	}
-
 	public static final int glGenLists(int p1) {
 		int base = displayListId + 1;
 		for (int i = 0; i < p1; i++) {
@@ -1272,6 +1268,162 @@ public class GL11 extends RealOpenGLEnums {
 	private static final Matrix4f cachedOcclusionP = (Matrix4f) (new Matrix4f()).setZero();
 	private static float[] occlusionModel = new float[16];
 	private static float[] occlusionProj = new float[16];
+
+	/*
+	* Used to emulate glBegin, glEnd, glVertex2f, etc
+	* Based off of Minecraft's "Tessellator"
+	*/
+	private static int bufferSize = 2097152;
+	private static Int32Array intBuffer = Int32Array.create(ArrayBuffer.create(bufferSize * 4));
+	private static int[] rawBuffer;
+	private static int vertexCount = 0;
+	private static double textureU;
+	private static double textureV;
+	private static int brightness;
+	private static int color;
+	private static boolean hasColor = false;
+	private static boolean hasTexture = false;
+	private static boolean hasBrightness = false;
+	private static boolean hasNormals = false;
+	private static int rawBufferIndex = 0;
+	private static int addedVertices = 0;
+	private static boolean isColorDisabled = false;
+	private static int drawMode;
+	private static double xOffset;
+	private static double yOffset;
+	private static double zOffset;
+	private static int normal;
+	private static boolean isDrawing = false;
+
+	private static final void reset() {
+		vertexCount = 0;
+		rawBufferIndex = 0;
+		addedVertices = 0;
+	}
+
+	public static final void glBegin(int drawMode) {
+		if(isDrawing) {
+			throw new IllegalStateException("Already building!");
+		} else {
+			isDrawing = true;
+			reset();
+			drawMode = drawMode;
+			hasNormals = false;
+			hasColor = false;
+			hasTexture = false;
+			hasBrightness = false;
+			isColorDisabled = false;
+		}
+	}
+
+	public static final void glEnd() {
+		if(!isDrawing) {
+			throw new IllegalStateException("Not building!");
+		} else {
+			isDrawing = false;
+			if(vertexCount > 0) {
+				if(hasTexture) {
+					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				}
+
+				if(hasBrightness) {
+					glClientActiveTexture('\u84c1');
+					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				}
+
+				if(hasColor) {
+					glEnableClientState(GL_COLOR_ARRAY);
+				}
+
+				if(hasNormals) {
+					glEnableClientState(GL_NORMAL_ARRAY);
+				}
+
+				glEnableClientState(GL_VERTEX_ARRAY);
+				glDrawArrays(drawMode, 0, vertexCount, Int32Array.create(intBuffer.getBuffer(), 0, vertexCount * 7));
+
+				glDisableClientState(GL_VERTEX_ARRAY);
+				if(hasTexture) {
+					glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+				}
+
+				if(hasBrightness) {
+					glClientActiveTexture('\u84c1');
+					glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+					glClientActiveTexture('\u84c0');
+				}
+
+				if(hasColor) {
+					glDisableClientState(GL_COLOR_ARRAY);
+				}
+
+				if(hasNormals) {
+					glDisableClientState(GL_NORMAL_ARRAY);
+				}
+			}
+
+			int var1 = rawBufferIndex * 4;
+			reset();
+		}
+	}
+
+	public static final void glVertex2f(float x, float y) {
+		addVertex(x, y, 0);
+	}
+
+	public static final void glVertex3f(float x, float y, float z) {
+		addVertex(x, y, z);
+	}
+
+	public static final void glTexCoord2f(float U, float V) {
+		hasTexture = true;
+		textureU = U;
+		textureV = V;
+	}
+
+	public static final void glNormal3f(float p1, float p2, float p3) {
+		float len = (float) Math.sqrt(p1 * p1 + p2 * p2 + p3 * p3);
+		normalX = p1 / len;
+		normalY = p2 / len;
+		normalZ = p3 / len;
+		hasNormals = true;
+
+		byte p4 = (byte)((int)(p1 * 127.0F));
+		byte p5 = (byte)((int)(p2 * 127.0F));
+		byte p6 = (byte)((int)(p3 * 127.0F));
+		normal = p4 | p5 << 8 | p6 << 16;
+	}
+
+	private static final void addVertex(double var1, double var3, double var5) {
+		++addedVertices;
+
+		if(hasTexture) {
+			rawBuffer[rawBufferIndex + 3] = Float.floatToRawIntBits((float)textureU);
+			rawBuffer[rawBufferIndex + 4] = Float.floatToRawIntBits((float)textureV);
+		}
+
+		if(hasBrightness) {
+			rawBuffer[rawBufferIndex + 7] = brightness;
+		}
+
+		if(hasColor) {
+			rawBuffer[rawBufferIndex + 5] = color;
+		}
+
+		if(hasNormals) {
+			rawBuffer[rawBufferIndex + 6] = normal;
+		}
+
+		rawBuffer[rawBufferIndex + 0] = Float.floatToRawIntBits((float)(var1 + xOffset));
+		rawBuffer[rawBufferIndex + 1] = Float.floatToRawIntBits((float)(var3 + yOffset));
+		rawBuffer[rawBufferIndex + 2] = Float.floatToRawIntBits((float)(var5 + zOffset));
+		rawBufferIndex += 8;
+		++vertexCount;
+		if(vertexCount % 4 == 0 && rawBufferIndex >= bufferSize - 32) {
+			glEnd();
+			isDrawing = true;
+		}
+	}
 
 	public static final void glBindOcclusionBB() {
 		if (occlusion_vao == null)

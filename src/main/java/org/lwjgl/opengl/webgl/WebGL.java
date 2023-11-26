@@ -1,39 +1,49 @@
 package org.lwjgl.opengl.webgl;
 
-import org.teavm.jso.dom.events.Event;
-import org.teavm.jso.dom.events.EventListener;
-import org.teavm.jso.canvas.ImageData;
+import com.jcraft.jzlib.InflaterInputStream;
+import java.io.*;
+import java.nio.*;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.HashMap;
+
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.RealOpenGLEnums;
+import org.lwjgl.util.*;
+
 import org.teavm.interop.Async;
 import org.teavm.interop.AsyncCallback;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;
-import org.teavm.jso.webgl.WebGLBuffer;
-import org.teavm.jso.webgl.WebGLFramebuffer;
-import org.teavm.jso.webgl.WebGLProgram;
-import org.teavm.jso.webgl.WebGLRenderbuffer;
-import org.teavm.jso.webgl.WebGLShader;
-import org.teavm.jso.webgl.WebGLTexture;
-import org.teavm.jso.webgl.WebGLUniformLocation;
+import org.teavm.jso.ajax.XMLHttpRequest;
+import org.teavm.jso.ajax.ReadyStateChangeHandler;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
+import org.teavm.jso.canvas.ImageData;
+import org.teavm.jso.dom.events.Event;
+import org.teavm.jso.dom.events.EventListener;
+import org.teavm.jso.dom.html.HTMLCanvasElement;
+import org.teavm.jso.dom.html.HTMLImageElement;
 import org.teavm.jso.typedarrays.ArrayBuffer;
 import org.teavm.jso.typedarrays.Float32Array;
 import org.teavm.jso.typedarrays.Int32Array;
 import org.teavm.jso.typedarrays.Uint8Array;
 import org.teavm.jso.typedarrays.Uint8ClampedArray;
-import org.teavm.jso.dom.html.HTMLCanvasElement;
-import org.teavm.jso.dom.html.HTMLImageElement;
-import java.nio.*;
+import org.teavm.jso.webgl.WebGLBuffer;
+import org.teavm.jso.webgl.WebGLFramebuffer;
+import org.teavm.jso.webgl.WebGLProgram;
+import org.teavm.jso.webgl.WebGLRenderbuffer;
+import org.teavm.jso.webgl.WebGLRenderingContext;
+import org.teavm.jso.webgl.WebGLShader;
+import org.teavm.jso.webgl.WebGLTexture;
+import org.teavm.jso.webgl.WebGLUniformLocation;
 
-import org.lwjgl.Main;
-import org.lwjgl.opengl.RealOpenGLEnums;
-import org.lwjgl.opengl.webgl.util.BufferedImage;
 import static org.lwjgl.opengl.GL11.*;
 import static org.teavm.jso.webgl.WebGLRenderingContext.*;
-import static org.lwjgl.Main.WebGL.*;
 
 public class WebGL {
-    public static Main.WebGL webgl;
+    public static WEBGL webgl;
 
     public static final int _wGL_TEXTURE_2D = GL_TEXTURE_2D;
 	public static final int _wGL_DEPTH_TEST = GL_DEPTH_TEST;
@@ -108,23 +118,24 @@ public class WebGL {
 	public static final int _wGL_LINEAR_MIPMAP_NEAREST = GL_LINEAR_MIPMAP_NEAREST; 
 	public static final int _wGL_NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST;
 	public static final int _wGL_TEXTURE_MAX_LEVEL = GL_TEXTURE_MAX_LEVEL; 
-	public static final int _wGL_UNSIGNED_INT_24_8 = UNSIGNED_INT_24_8;
+	public static final int _wGL_UNSIGNED_INT_24_8 = WEBGL.UNSIGNED_INT_24_8;
 	public static final int _wGL_UNSIGNED_INT = RealOpenGLEnums.GL_UNSIGNED_INT;
-	public static final int _wGL_ANY_SAMPLES_PASSED = ANY_SAMPLES_PASSED; 
+	public static final int _wGL_ANY_SAMPLES_PASSED = WEBGL.ANY_SAMPLES_PASSED; 
 	public static final int _wGL_QUERY_RESULT = RealOpenGLEnums.GL_QUERY_RESULT;
 	public static final int _wGL_QUERY_RESULT_AVAILABLE = RealOpenGLEnums.GL_QUERY_RESULT_AVAILABLE;
-	public static final int _wGL_TEXTURE_MAX_ANISOTROPY = TEXTURE_MAX_ANISOTROPY_EXT;
-	public static final int _wGL_DEPTH24_STENCIL8 = DEPTH24_STENCIL8;
-	public static final int _wGL_DEPTH_COMPONENT32F = DEPTH_COMPONENT32F;
+	public static final int _wGL_TEXTURE_MAX_ANISOTROPY = WEBGL.TEXTURE_MAX_ANISOTROPY_EXT;
+	public static final int _wGL_DEPTH24_STENCIL8 = WEBGL.DEPTH24_STENCIL8;
+	public static final int _wGL_DEPTH_COMPONENT32F = WEBGL.DEPTH_COMPONENT32F;
 	public static final int _wGL_DEPTH_ATTACHMENT = DEPTH_ATTACHMENT;
 	public static final int _wGL_MULTISAMPLE = -1;
 	public static final int _wGL_LINE_SMOOTH = -1;
-	public static final int _wGL_READ_FRAMEBUFFER = READ_FRAMEBUFFER;
-	public static final int _wGL_DRAW_FRAMEBUFFER = DRAW_FRAMEBUFFER;
+	public static final int _wGL_READ_FRAMEBUFFER = WEBGL.READ_FRAMEBUFFER;
+	public static final int _wGL_DRAW_FRAMEBUFFER = WEBGL.DRAW_FRAMEBUFFER;
 	public static final int _wGL_FRAMEBUFFER = FRAMEBUFFER;
 	public static final int _wGL_POLYGON_OFFSET_FILL = GL_POLYGON_OFFSET_FILL;
 
 	public static boolean hasDebugRenderInfoExt = false;
+	public static boolean anisotropicFilteringSupported = false;
 
     public static final class TextureGL { 
 		protected final WebGLTexture obj;
@@ -164,9 +175,9 @@ public class WebGL {
 		} 
 	} 
 	public static final class BufferArrayGL { 
-		protected final Main.WebGLVertexArray obj; 
+		protected final WebGLVertexArray obj; 
 		public boolean isQuadBufferBound; 
-		protected BufferArrayGL(Main.WebGLVertexArray obj) { 
+		protected BufferArrayGL(WebGLVertexArray obj) { 
 			this.obj = obj; 
 			this.isQuadBufferBound = false; 
 		} 
@@ -184,8 +195,8 @@ public class WebGL {
 		} 
 	} 
 	public static final class QueryGL { 
-		protected final Main.WebGLQuery obj; 
-		protected QueryGL(Main.WebGLQuery obj) { 
+		protected final WebGLQuery obj; 
+		protected QueryGL(WebGLQuery obj) { 
 			this.obj = obj; 
 		} 
 	}
@@ -554,12 +565,12 @@ public class WebGL {
 	}
 	
 	@JSBody(params = { "ctx", "p" }, script = "return ctx.getTexParameter(0x0DE1, p) | 0;")
-	private static final native int __wglGetTexParameteri(Main.WebGL ctx, int p);
+	private static final native int __wglGetTexParameteri(WEBGL ctx, int p);
 	public static final int _wglGetTexParameteri(int p1) {
 		return __wglGetTexParameteri(webgl, p1);
 	}
 	@JSBody(params = { "ctx", "p" }, script = "return (0.0 + ctx.getTexParameter(0x0DE1, p));")
-	private static final native float __wglGetTexParameterf(Main.WebGL ctx, int p);
+	private static final native float __wglGetTexParameterf(WEBGL ctx, int p);
 	public static final float _wglGetTexParameterf(int p1) {
 		return __wglGetTexParameterf(webgl, p1);
 	}
@@ -588,77 +599,140 @@ public class WebGL {
 		return ret;
 	}
 
-    //Used for loading images
-
-    public static final BufferedImage loadPNG(byte[] data) {
-		ArrayBuffer arr = ArrayBuffer.create(data.length);
-		Uint8Array.create(arr).set(data);
-		return loadPNG0(arr);
-	}
-
-	@Async
-	private static native BufferedImage loadPNG0(ArrayBuffer data);
-
-	private static void loadPNG0(ArrayBuffer data, final AsyncCallback<BufferedImage> ret) {
-		final HTMLImageElement toLoad = (HTMLImageElement) Main.doc.createElement("img");
-		toLoad.addEventListener("load", new EventListener<Event>() {
-			@Override
-			public void handleEvent(Event evt) {
-				if(Main.imageLoadCanvas == null) {
-					Main.imageLoadCanvas = (HTMLCanvasElement) Main.doc.createElement("canvas");
-				}
-				if(Main.imageLoadCanvas.getWidth() < toLoad.getWidth()) {
-					Main.imageLoadCanvas.setWidth(toLoad.getWidth());
-				}
-				if(Main.imageLoadCanvas.getHeight() < toLoad.getHeight()) {
-					Main.imageLoadCanvas.setHeight(toLoad.getHeight());
-				}
-				if(Main.imageLoadContext == null) {
-					Main.imageLoadContext = (CanvasRenderingContext2D) Main.imageLoadCanvas.getContext("2d");
-				}
-				Main.imageLoadContext.clearRect(0, 0, toLoad.getWidth(), toLoad.getHeight());
-				Main.imageLoadContext.drawImage(toLoad, 0, 0, toLoad.getWidth(), toLoad.getHeight());
-				ImageData pxlsDat = Main.imageLoadContext.getImageData(0, 0, toLoad.getWidth(), toLoad.getHeight());
-				Uint8ClampedArray pxls = pxlsDat.getData();
-				int totalPixels = pxlsDat.getWidth() * pxlsDat.getHeight();
-				freeDataURL(toLoad.getSrc());
-				if(pxls.getByteLength() < totalPixels * 4) {
-					ret.complete(null);
-					return;
-				}
-				int[] pixels = new int[totalPixels];
-				for(int i = 0; i < pixels.length; ++i) {
-					pixels[i] = (pxls.get(i * 4) << 16) | (pxls.get(i * 4 + 1) << 8) | pxls.get(i * 4 + 2) | (pxls.get(i * 4 + 3) << 24);
-				}
-				ret.complete(new BufferedImage(pixels, pxlsDat.getWidth(), pxlsDat.getHeight(), true));
-			}
-		});
-		toLoad.addEventListener("error", new EventListener<Event>() {
-			@Override
-			public void handleEvent(Event evt) {
-				freeDataURL(toLoad.getSrc());
-				ret.complete(null);
-			}
-		});
-		String src = getDataURL(data, "image/png");
-		if(src == null) {
-			ret.complete(null);
-		}else {
-			toLoad.setSrc(src);
-		}
-	}
-
 	public static final boolean anisotropicFilteringSupported() {
-		return Main.anisotropicFilteringSupported;
+		return anisotropicFilteringSupported;
 	}
 
 	public static final boolean glNeedsAnisotropicFix() {
-		return Main.anisotropicFilteringSupported && DetectAnisotropicGlitch.hasGlitch();
+		return anisotropicFilteringSupported && DetectAnisotropicGlitch.hasGlitch();
 	}
 
-    @JSBody(params = { "buf", "mime" }, script = "return URL.createObjectURL(new Blob([buf], {type: mime}));")
-	private static native String getDataURL(ArrayBuffer buf, String mime);
+	private static byte[] loadedPackage = null;
+	private static final HashMap<String, byte[]> filePool = new HashMap();
 
-	@JSBody(params = { "url" }, script = "URL.revokeObjectURL(url);")
-	private static native void freeDataURL(String url);
+	/*
+	* Downloads the assets for the program by file name
+	* FILE HAS TO BE COMPILED USING LAX1DUDE'S EPK COMPILER!
+	*/
+	@Async
+	public static native String downloadAssetPack(String filename);
+
+	private static void downloadAssetPack(String filename, final AsyncCallback<String> cb) {
+		final XMLHttpRequest request = XMLHttpRequest.create();
+		request.setResponseType("arraybuffer");
+		request.open("GET", filename, true);
+		request.setOnReadyStateChange(new ReadyStateChangeHandler() {
+			@Override
+			public void stateChanged() {
+				if(request.getReadyState() == XMLHttpRequest.DONE) {
+					Uint8Array bl = Uint8Array.create((ArrayBuffer)request.getResponse());
+					loadedPackage = new byte[bl.getByteLength()];
+					for(int i = 0; i < loadedPackage.length; ++i) {
+						loadedPackage[i] = (byte) bl.get(i);
+					}
+					cb.complete("yee");
+				}
+			}
+		});
+		request.send();
+
+		try {
+			ByteArrayInputStream in2 = new ByteArrayInputStream(loadedPackage);
+			DataInputStream in = new DataInputStream(in2);
+			byte[] header = new byte[8];
+			in.read(header);
+			if (!"EAGPKG!!".equals(new String(header, Charset.forName("UTF-8")))) {
+				throw new LWJGLException("invalid EPK file!");
+			}
+			in.readUTF();
+			in = new DataInputStream(new InflaterInputStream(in2));
+			String s = null;
+			SHA1Digest dg = new SHA1Digest();
+			while ("<file>".equals(s = in.readUTF())) {
+				String path = in.readUTF();
+				byte[] digest = new byte[20];
+				byte[] digest2 = new byte[20];
+				in.read(digest);
+				int len = in.readInt();
+				byte[] file = new byte[len];
+				in.read(file);
+				if (filePool.containsKey(path)) {
+					continue;
+				}
+				dg.update(file, 0, len);
+				dg.doFinal(digest2, 0);
+				if (!Arrays.equals(digest, digest2)) {
+					throw new LWJGLException("invalid file hash for " + path);
+				}
+				filePool.put(path, file);
+				if (!"</file>".equals(in.readUTF())) {
+					throw new LWJGLException("invalid EPK file!");
+				}
+			}
+			if (in.available() > 0 || !" end".equals(s)) {
+				throw new LWJGLException("invalid EPK file!");
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static final byte[] getResource(String path) {
+		if (path.startsWith("/")) {
+			path = path.substring(1);
+		}
+		return filePool.get(path);
+	}
+
+	public static final String fileContents(String path) {
+		byte[] contents = getResource(path);
+		if(contents == null) {
+			return null;
+		}else {
+			return new String(contents, Charset.forName("UTF-8"));
+		}
+	}
+
+	public interface WEBGL extends WebGLRenderingContext {
+		int TEXTURE_MAX_LEVEL = 0x0000813D;
+		int TEXTURE_MAX_ANISOTROPY_EXT = 0x000084FE;
+		int UNSIGNED_INT_24_8 = 0x000084FA;
+		int ANY_SAMPLES_PASSED = 0x00008D6A; 
+		int QUERY_RESULT = 0x00008866;
+		int QUERY_RESULT_AVAILABLE = 0x00008867;
+		int DEPTH24_STENCIL8 = 0x000088F0;
+		int DEPTH_COMPONENT32F = 0x00008CAC;
+		int READ_FRAMEBUFFER = 0x00008CA8;
+		int DRAW_FRAMEBUFFER = 0x00008CA9;
+		int RGB8 = 0x00008051;
+		int RGBA8 = 0x00008058;
+		
+		WebGLQuery createQuery();
+	
+		void beginQuery(int p1, WebGLQuery obj);
+	
+		void endQuery(int p1);
+	
+		void deleteQuery(WebGLQuery obj);
+	
+		int getQueryParameter(WebGLQuery obj, int p2);
+	
+		WebGLVertexArray createVertexArray();
+	
+		void deleteVertexArray(WebGLVertexArray obj);  
+	
+		void bindVertexArray(WebGLVertexArray obj); 
+		
+		void renderbufferStorageMultisample(int p1, int p2, int p3, int p4, int p5);
+		
+		void blitFramebuffer(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10);
+		
+		void drawBuffers(int[] p1);
+	}
+
+	public interface WebGLQuery extends JSObject {
+	}
+
+	public interface WebGLVertexArray extends JSObject {
+	}
 }

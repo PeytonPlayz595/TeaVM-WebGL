@@ -2,14 +2,14 @@ package org.lwjgl.opengl.webgl;
 
 import org.lwjgl.opengl.RealOpenGLEnums;
 
-import static org.lwjgl.Main.WebGL.*;
+import static org.lwjgl.opengl.webgl.WebGL.WEBGL.*;
 
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.typedarrays.Float32Array;
 import org.teavm.jso.typedarrays.Uint8Array;
 
-import org.lwjgl.Main.WebGLVertexArray;
+import org.lwjgl.opengl.webgl.WebGL.WebGLVertexArray;
 
 import org.teavm.jso.webgl.*;
 
@@ -32,7 +32,7 @@ public class DetectAnisotropicGlitch {
 		cvs.setWidth(400);		
 		cvs.setHeight(300);
 		
-		org.lwjgl.Main.WebGL ctx = (org.lwjgl.Main.WebGL) cvs.getContext("webgl2");
+		org.lwjgl.opengl.webgl.WebGL.WEBGL ctx = (org.lwjgl.opengl.webgl.WebGL.WEBGL) cvs.getContext("webgl2");
 		
 		if(ctx == null) {
 			throw new UnsupportedOperationException("WebGL 2 is not supported on this device!");

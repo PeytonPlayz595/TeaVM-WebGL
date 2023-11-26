@@ -5,8 +5,8 @@ import org.teavm.jso.dom.events.EventListener;
 import org.teavm.jso.dom.events.MouseEvent;
 import org.teavm.jso.dom.events.WheelEvent;
 
-import org.lwjgl.Main;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
 
 import java.util.LinkedList;
 
@@ -59,7 +59,7 @@ public class Mouse {
 		@Override
 		public void handleEvent(MouseEvent evt) {
 			x = getOffsetX(evt);
-			y = Main.canvas.getClientHeight() - getOffsetY(evt);
+			y = Display.getDisplayMode().getCanvas().getClientHeight() - getOffsetY(evt);
 			DX += evt.getMovementX();
 			DY += -evt.getMovementY();
 			evt.preventDefault();
@@ -111,9 +111,9 @@ public class Mouse {
     public static void setGrabbed(boolean b) {
         checkHasInitialized(true);
         if(b) {
-            Main.canvas.requestPointerLock();
+            Display.getDisplayMode().getCanvas().requestPointerLock();
         } else {
-            Main.doc.exitPointerLock();
+            Display.getDisplayMode().getDocument().exitPointerLock();
         }
     }
 
@@ -129,7 +129,7 @@ public class Mouse {
 
     public static int getEventY() {
         checkHasInitialized(true);
-        return currentEvent == null ? -1 : Main.canvas.getClientHeight() - currentEvent.getClientY();
+        return currentEvent == null ? -1 : Display.getDisplayMode().getCanvas().getClientHeight() - currentEvent.getClientY();
     }
 
     public static int getEventButton() {
@@ -159,22 +159,22 @@ public class Mouse {
     }
 
     public static void create() throws LWJGLException {
-        Main.win.addEventListener("contextmenu", contextmenu);
-		Main.canvas.addEventListener("mousedown", mousedown);
-		Main.canvas.addEventListener("mouseup", mouseup);
-		Main.canvas.addEventListener("mousemove", mousemove);
-		Main.canvas.addEventListener("wheel", wheel);
+        Display.getDisplayMode().getWindow().addEventListener("contextmenu", contextmenu);
+		Display.getDisplayMode().getCanvas().addEventListener("mousedown", mousedown);
+		Display.getDisplayMode().getCanvas().addEventListener("mouseup", mouseup);
+		Display.getDisplayMode().getCanvas().addEventListener("mousemove", mousemove);
+		Display.getDisplayMode().getCanvas().addEventListener("wheel", wheel);
         mouseEvents.clear();
         init = true;
     }
 
     public static void destroy() throws LWJGLException {
         checkHasInitialized(true);
-        Main.win.removeEventListener("contextmenu", contextmenu);
-		Main.canvas.removeEventListener("mousedown", mousedown);
-		Main.canvas.removeEventListener("mouseup", mouseup);
-		Main.canvas.removeEventListener("mousemove", mousemove);
-		Main.canvas.removeEventListener("wheel", wheel);
+        Display.getDisplayMode().getWindow().removeEventListener("contextmenu", contextmenu);
+		Display.getDisplayMode().getCanvas().removeEventListener("mousedown", mousedown);
+		Display.getDisplayMode().getCanvas().removeEventListener("mouseup", mouseup);
+		Display.getDisplayMode().getCanvas().removeEventListener("mousemove", mousemove);
+		Display.getDisplayMode().getCanvas().removeEventListener("wheel", wheel);
         mouseEvents.clear();
         init = false;
     }

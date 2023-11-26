@@ -4,7 +4,7 @@ import org.teavm.jso.JSBody;
 import org.teavm.jso.dom.events.EventListener;
 import org.teavm.jso.dom.events.KeyboardEvent;
 
-import org.lwjgl.Main;
+import org.lwjgl.opengl.Display;
 
 import java.util.LinkedList;
 
@@ -219,18 +219,18 @@ public class Keyboard {
     }
 
 	public static void create() throws LWJGLException {
-		Main.win.addEventListener("keydown", keydown);
-		Main.win.addEventListener("keyup", keyup);
-		Main.win.addEventListener("keypress", keypress);
+		Display.getDisplayMode().getWindow().addEventListener("keydown", keydown);
+		Display.getDisplayMode().getWindow().addEventListener("keyup", keyup);
+		Display.getDisplayMode().getWindow().addEventListener("keypress", keypress);
 		keyEvents.clear();
 		init = true;
     }
 
     public static void destroy() throws LWJGLException {
 		checkHasInitialized(true);
-		Main.win.removeEventListener("keydown", keydown);
-		Main.win.removeEventListener("keyup", keyup);
-		Main.win.removeEventListener("keypress", keypress);
+		Display.getDisplayMode().getWindow().removeEventListener("keydown", keydown);
+		Display.getDisplayMode().getWindow().removeEventListener("keyup", keyup);
+		Display.getDisplayMode().getWindow().removeEventListener("keypress", keypress);
 		keyEvents.clear();
 		init = false;
     }

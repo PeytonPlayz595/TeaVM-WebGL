@@ -59,7 +59,7 @@ teavm {
    targetFileName = "app.js";
    
    /** Which class holds your public static void main(Strin[] args) method */
-   mainClass = 'org.lwjgl.Main';
+   mainClass = 'org.lwjgl.LWJGLMain';
    
    /** This will be the name of your main method after compilation. */
    entryPointName = 'main';

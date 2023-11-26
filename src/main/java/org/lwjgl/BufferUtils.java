@@ -4,31 +4,31 @@ import java.nio.*;
 
 public class BufferUtils {	
 	public static ByteBuffer createByteBuffer(int i1) {
-		return ByteBuffer.wrap(new byte[i1]).order(ByteOrder.nativeOrder());
+		return ByteBuffer.wrap(new byte[i1]);
 	}
 
 	public static ShortBuffer createShortBuffer(int size) {
-		return createByteBuffer(size << 1).asShortBuffer();
+		return ShortBuffer.wrap(new short[size]);
 	}
 
 	public static CharBuffer createCharBuffer(int size) {
-		return createByteBuffer(size << 1).asCharBuffer();
+		return CharBuffer.wrap(new char[size]);
 	}
 
 	public static IntBuffer createIntBuffer(int size) {
-		return createByteBuffer(size << 2).asIntBuffer();
+		return IntBuffer.wrap(new int[size]);
 	}
 
 	public static LongBuffer createLongBuffer(int size) {
-		return createByteBuffer(size << 3).asLongBuffer();
+		return LongBuffer.wrap(new long[size]);
 	}
 
 	public static FloatBuffer createFloatBuffer(int size) {
-		return createByteBuffer(size << 2).asFloatBuffer();
+		return FloatBuffer.wrap(new float[size]);
 	}
 
 	public static DoubleBuffer createDoubleBuffer(int size) {
-		return createByteBuffer(size << 3).asDoubleBuffer();
+		return DoubleBuffer.wrap(new double[size]);
 	}
 
 	public static int getElementSizeExponent(Buffer buf) {

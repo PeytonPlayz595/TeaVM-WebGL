@@ -211,6 +211,10 @@ public class Keyboard {
         return keyStates[i];
     }
 
+	public static boolean isFunctionKeyDown(int i) {
+		return !(i > 9) && !(i < 0) && getEventKey() == KEY_F && isKeyDown(i + 1);
+	}
+
 	private static boolean checkHasInitialized(boolean shouldThrowError) {
         if(shouldThrowError && !init) {
             throw new IllegalArgumentException("Cannot access Keyboard class before initialization!");

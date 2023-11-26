@@ -29,8 +29,8 @@ public class DisplayMode {
     private static HTMLDocument doc = Window.current().getDocument();
 	private static HTMLElement parent = (HTMLElement)Window.current().getDocument().getBody();
 
-    private static HTMLCanvasElement imageLoadCanvas = null;
-	private static CanvasRenderingContext2D imageLoadContext = null;
+    private static HTMLCanvasElement imageLoadCanvas = (HTMLCanvasElement) doc.createElement("canvas");
+	private static CanvasRenderingContext2D imageLoadContext = (CanvasRenderingContext2D) imageLoadCanvas.getContext("2d");
 
     public DisplayMode() {
         dm = this;
@@ -76,17 +76,11 @@ public class DisplayMode {
 		toLoad.addEventListener("load", new EventListener<Event>() {
 			@Override
 			public void handleEvent(Event evt) {
-				if(imageLoadCanvas == null) {
-					imageLoadCanvas = (HTMLCanvasElement) doc.createElement("canvas");
-				}
 				if(imageLoadCanvas.getWidth() < toLoad.getWidth()) {
 					imageLoadCanvas.setWidth(toLoad.getWidth());
 				}
 				if(imageLoadCanvas.getHeight() < toLoad.getHeight()) {
 					imageLoadCanvas.setHeight(toLoad.getHeight());
-				}
-				if(imageLoadContext == null) {
-					imageLoadContext = (CanvasRenderingContext2D) imageLoadCanvas.getContext("2d");
 				}
 				imageLoadContext.clearRect(0, 0, toLoad.getWidth(), toLoad.getHeight());
 				imageLoadContext.drawImage(toLoad, 0, 0, toLoad.getWidth(), toLoad.getHeight());

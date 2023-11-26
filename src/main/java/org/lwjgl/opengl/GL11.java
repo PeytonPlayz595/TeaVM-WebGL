@@ -946,7 +946,7 @@ public class GL11 extends RealOpenGLEnums {
 		}
 	}
 
-	public static final void glEnableVertexAttrib(int p1) {
+	public static final void glEnableClientState(int p1) {
 		switch (p1) {
 		case GL_COLOR_ARRAY:
 			enableColorArray = true;
@@ -971,7 +971,7 @@ public class GL11 extends RealOpenGLEnums {
 		}
 	}
 
-	public static final void glDisableVertexAttrib(int p1) {
+	public static final void glDisableClientState(int p1) {
 		switch (p1) {
 		case GL_COLOR_ARRAY:
 			enableColorArray = false;

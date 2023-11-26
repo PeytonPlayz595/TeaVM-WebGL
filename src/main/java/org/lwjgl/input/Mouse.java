@@ -15,7 +15,6 @@ public class Mouse {
     private static LinkedList<MouseEvent> mouseEvents = new LinkedList();
     private static boolean[] buttonStates = new boolean[8];
     private static MouseEvent currentEvent = null;
-
     private static EventListener<MouseEvent> contextmenu = new EventListener<MouseEvent>() {
 		@Override
 		public void handleEvent(MouseEvent evt) {
@@ -70,6 +69,8 @@ public class Mouse {
 
     private static int x, y;
     private static double DX, DY;
+    
+    private static boolean init = false;
 
     @JSBody(params = { "m" }, script = "return m.offsetX;")
 	private static native int getOffsetX(MouseEvent m);
@@ -78,31 +79,37 @@ public class Mouse {
 	private static native int getOffsetY(MouseEvent m);
 
     public static int getDX() {
+        checkHasInitialized(true);
         double dx = DX;
         DX = 0.0D;
         return (int)dx;
     }
 
     public static int getDY() {
+        checkHasInitialized(true);
         double dy = DY;
         DY = 0.0D;
         return (int)dy;
     }
 
     public static int getX() {
+        checkHasInitialized(true);
         return x;
     }
 
     public static int getY() {
+        checkHasInitialized(true);
         return y;
     }
 
     public static boolean next() {
+        checkHasInitialized(true);
         currentEvent = null;
 		return !mouseEvents.isEmpty() && (currentEvent = mouseEvents.remove(0)) != null;
     }
 
     public static void setGrabbed(boolean b) {
+        checkHasInitialized(true);
         if(b) {
             Main.canvas.requestPointerLock();
         } else {
@@ -111,18 +118,22 @@ public class Mouse {
     }
 
     public static boolean getEventButtonState() {
+        checkHasInitialized(true);
         return currentEvent == null ? false : currentEvent.getType().equals(MouseEvent.MOUSEDOWN);
     }
 
     public static int getEventX() {
+        checkHasInitialized(true);
         return currentEvent == null ? -1 : currentEvent.getClientX();
     }
 
     public static int getEventY() {
+        checkHasInitialized(true);
         return currentEvent == null ? -1 : Main.canvas.getClientHeight() - currentEvent.getClientY();
     }
 
     public static int getEventButton() {
+        checkHasInitialized(true);
         if(currentEvent == null) { 
             return -1;
         }
@@ -131,11 +142,20 @@ public class Mouse {
     }
 
     public static boolean isButtonDown(int i) {
+        checkHasInitialized(true);
         return buttonStates[i];
     }
 
     public static int getEventDWheel() {
+        checkHasInitialized(true);
         return ("wheel".equals(currentEvent.getType())) ? (((WheelEvent)currentEvent).getDeltaY() == 0.0D ? 0 : (((WheelEvent)currentEvent).getDeltaY() > 0.0D ? -1 : 1)) : 0;
+    }
+
+    private static boolean checkHasInitialized(boolean shouldThrowError) {
+        if(shouldThrowError && !init) {
+            throw new IllegalArgumentException("Cannot access Mouse class before initialization!");
+        }
+        return init;
     }
 
     public static void create() throws LWJGLException {
@@ -145,20 +165,25 @@ public class Mouse {
 		Main.canvas.addEventListener("mousemove", mousemove);
 		Main.canvas.addEventListener("wheel", wheel);
         mouseEvents.clear();
+        init = true;
     }
 
     public static void destroy() throws LWJGLException {
+        checkHasInitialized(true);
         Main.win.removeEventListener("contextmenu", contextmenu);
 		Main.canvas.removeEventListener("mousedown", mousedown);
 		Main.canvas.removeEventListener("mouseup", mouseup);
 		Main.canvas.removeEventListener("mousemove", mousemove);
 		Main.canvas.removeEventListener("wheel", wheel);
         mouseEvents.clear();
+        init = false;
     }
 
     public static void setNativeCursor(Object o) throws LWJGLException {
+        checkHasInitialized(true);
 	}
 
     public static void setCursorPosition(int x, int y) {
+        checkHasInitialized(true);
     }
 }

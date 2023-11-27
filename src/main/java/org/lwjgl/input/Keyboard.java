@@ -230,7 +230,7 @@ public class Keyboard {
 		init = true;
     }
 
-    public static void destroy() throws LWJGLException {
+    public static void destroy() {
 		checkHasInitialized(true);
 		Display.getDisplayMode().getWindow().removeEventListener("keydown", keydown);
 		Display.getDisplayMode().getWindow().removeEventListener("keyup", keyup);

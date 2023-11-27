@@ -168,7 +168,7 @@ public class Mouse {
         init = true;
     }
 
-    public static void destroy() throws LWJGLException {
+    public static void destroy() {
         checkHasInitialized(true);
         Display.getDisplayMode().getWindow().removeEventListener("contextmenu", contextmenu);
 		Display.getDisplayMode().getCanvas().removeEventListener("mousedown", mousedown);

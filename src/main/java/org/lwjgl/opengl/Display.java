@@ -134,7 +134,7 @@ public class Display {
 		fullscreenQuery = fullscreenMediaQuery();
     }
 
-	public static void destroy() throws LWJGLException {
+	public static void destroy() {
 		System.err.println("Not implimented! WebGL Context will NOT be terminated!");
     }
 

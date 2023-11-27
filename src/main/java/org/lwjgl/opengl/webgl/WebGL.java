@@ -473,19 +473,6 @@ public class WebGL {
 			webgl.useProgram(p1.obj);
 		}
 	}
-	public static final void _wglGetParameter(int p1, IntBuffer ret) {
-		int[] array = ret.array();
-		if(p1 == _wGL_VIEWPORT) {
-			array[0] = viewportCache[0];
-			array[1] = viewportCache[1];
-			array[2] = viewportCache[2];
-			array[3] = viewportCache[3];
-			ByteBuffer byteBuffer = ByteBuffer.allocate(array.length * Integer.BYTES);
-			IntBuffer intBuffer = byteBuffer.asIntBuffer();
-			intBuffer.put(array);
-			ret = intBuffer;
-		}
-	}
 	public static final void _wglGetParameter(int p1, int[] ret) {
 		if(p1 == _wGL_VIEWPORT) {
 			ret[0] = viewportCache[0];

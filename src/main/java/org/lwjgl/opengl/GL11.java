@@ -657,12 +657,6 @@ public class GL11 extends RealOpenGLEnums {
 		return str;
 	}
 
-	public static final void glGetInteger(int p1, IntBuffer p2) {
-		if(p1 == GL_VIEWPORT) {
-			_wglGetParameter(_wGL_VIEWPORT, p2);
-		}
-	}
-
 	public static final void glGetInteger(int p1, int[] p2) {
 		if (p1 == GL_VIEWPORT) {
 			_wglGetParameter(_wGL_VIEWPORT, p2);
@@ -921,11 +915,6 @@ public class GL11 extends RealOpenGLEnums {
 		 */
 		bytesUploaded += p9.remaining() * 4;
 		_wglTexSubImage2D(pp1, p2, p3, p4, p5, p6, _wGL_RGBA, _wGL_UNSIGNED_BYTE, p9);
-	}
-
-	public static final void glDeleteTextures(IntBuffer p1) {
-		int p2 = p1.get();
-		_wglDeleteTextures(texObjects.free(p2));
 	}
 
 	public static final void glDeleteTextures(int p1) {
@@ -1465,14 +1454,6 @@ public class GL11 extends RealOpenGLEnums {
 	public static final boolean glGetQueryResultAvailable(int obj) {
 		QueryGL q = queryObjs.get(obj);
 		return _wglGetQueryObjecti(q, _wGL_QUERY_RESULT_AVAILABLE) >= 0;
-	}
-
-	public static final int glGenTextures(IntBuffer i) {
-		return texObjects.register(_wglGenTextures());
-	}
-
-	public static final int glGenTextures(int i) {
-		return texObjects.register(_wglGenTextures());
 	}
 
 	public static final int glGenTextures() {

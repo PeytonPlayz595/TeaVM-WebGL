@@ -615,12 +615,12 @@ public class WebGL {
 	* FILE HAS TO BE COMPILED USING LAX1DUDE'S EPK COMPILER!
 	*/
 	@Async
-	public static native String downloadAssetPack(String filename);
+	public static native String downloadAssetPack(String assetPackageURI);
 
-	private static void downloadAssetPack(String filename, final AsyncCallback<String> cb) {
+	private static void downloadAssetPack(String assetPackageURI, final AsyncCallback<String> cb) {
 		final XMLHttpRequest request = XMLHttpRequest.create();
 		request.setResponseType("arraybuffer");
-		request.open("GET", filename, true);
+		request.open("GET", assetPackageURI, true);
 		request.setOnReadyStateChange(new ReadyStateChangeHandler() {
 			@Override
 			public void stateChanged() {
@@ -635,45 +635,43 @@ public class WebGL {
 			}
 		});
 		request.send();
+	}
 
-		try {
-			ByteArrayInputStream in2 = new ByteArrayInputStream(loadedPackage);
-			DataInputStream in = new DataInputStream(in2);
-			byte[] header = new byte[8];
-			in.read(header);
-			if (!"EAGPKG!!".equals(new String(header, Charset.forName("UTF-8")))) {
-				throw new LWJGLException("invalid EPK file!");
+	public static final void install() throws IOException {
+		ByteArrayInputStream in2 = new ByteArrayInputStream(loadedPackage);
+		DataInputStream in = new DataInputStream(in2);
+		byte[] header = new byte[8];
+		in.read(header);
+		if(!"EAGPKG!!".equals(new String(header, Charset.forName("UTF-8")))) {
+			throw new IOException("Invalid EPK file!");
+		}
+		in.readUTF();
+		in = new DataInputStream(new InflaterInputStream(in2));
+		String s = null;
+		SHA1Digest dg = new SHA1Digest();
+		while("<file>".equals(s = in.readUTF())) {
+			String path = in.readUTF();
+			byte[] digest = new byte[20];
+			byte[] digest2 = new byte[20];
+			in.read(digest);
+			int len = in.readInt();
+			byte[] file = new byte[len];
+			in.read(file);
+			if(filePool.containsKey(path)) {
+				continue;
 			}
-			in.readUTF();
-			in = new DataInputStream(new InflaterInputStream(in2));
-			String s = null;
-			SHA1Digest dg = new SHA1Digest();
-			while ("<file>".equals(s = in.readUTF())) {
-				String path = in.readUTF();
-				byte[] digest = new byte[20];
-				byte[] digest2 = new byte[20];
-				in.read(digest);
-				int len = in.readInt();
-				byte[] file = new byte[len];
-				in.read(file);
-				if (filePool.containsKey(path)) {
-					continue;
-				}
-				dg.update(file, 0, len);
-				dg.doFinal(digest2, 0);
-				if (!Arrays.equals(digest, digest2)) {
-					throw new LWJGLException("invalid file hash for " + path);
-				}
-				filePool.put(path, file);
-				if (!"</file>".equals(in.readUTF())) {
-					throw new LWJGLException("invalid EPK file!");
-				}
+			dg.update(file, 0, len);
+			dg.doFinal(digest2, 0);
+			if(!Arrays.equals(digest, digest2)) {
+				throw new IOException("Invalid file hash for " + path);
 			}
-			if (in.available() > 0 || !" end".equals(s)) {
-				throw new LWJGLException("invalid EPK file!");
+			filePool.put(path, file);
+			if(!"</file>".equals(in.readUTF())) {
+				throw new IOException("Invalid EPK file!");
 			}
-		} catch(Exception e) {
-			e.printStackTrace();
+		}
+		if(in.available() > 0 || !" end".equals(s)) {
+			throw new IOException("Invalid EPK file!");
 		}
 	}
 

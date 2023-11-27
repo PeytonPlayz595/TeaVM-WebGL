@@ -9,6 +9,7 @@ import org.teavm.jso.canvas.ImageData;
 import org.teavm.interop.Async;
 import org.teavm.interop.AsyncCallback;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
+import org.teavm.jso.dom.html.HTMLBodyElement;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLElement;
@@ -27,14 +28,10 @@ public class DisplayMode {
     private static DisplayMode dm;
     private Window win = Window.current();
     private static HTMLDocument doc = Window.current().getDocument();
-	private static HTMLElement parent = (HTMLElement)Window.current().getDocument().getBody();
+	private static HTMLBodyElement parent = Window.current().getDocument().getBody();
 
     private static HTMLCanvasElement imageLoadCanvas = (HTMLCanvasElement) doc.createElement("canvas");
 	private static CanvasRenderingContext2D imageLoadContext = (CanvasRenderingContext2D) imageLoadCanvas.getContext("2d");
-
-    public DisplayMode() {
-        dm = this;
-    }
 
     public Window getWindow() {
         return win;
@@ -44,7 +41,7 @@ public class DisplayMode {
         return doc;
     }
 
-    public HTMLElement getParent() {
+    public HTMLBodyElement getParent() {
         return parent;
     }
 
@@ -57,10 +54,11 @@ public class DisplayMode {
     }
  
     public static DisplayMode getDisplayMode() {
+        if(dm == null) {
+            dm = new DisplayMode();
+        }
         return dm;
     }
-
-    //Used for loading images
 
     public static final BufferedImage loadPNG(byte[] data) {
 		ArrayBuffer arr = ArrayBuffer.create(data.length);

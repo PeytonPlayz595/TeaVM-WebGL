@@ -62,5 +62,8 @@ Once you download and install the resources from the EPK file you are able to re
 # Loading and Rendering images
 
 # Loading GLSL Shaders
+You can load GLSL shaders using `WebGL._wglShaderSource(WebGL.ShaderGL, string, string)` and `WebGL._wglCompileShader(WebGL.ShaderGL)`
+I'm too lazy to make an actual documentation atm so I'll just give you the function names and let you figure out the rest on your own, just scroll through `OpenGLFunctionShader` and you'll figure it out.
 
 # Projects created with this OpenGL Emulator
+- [Minecraft 1.0 WebGL Port](https://github.com/PeytonPlayz595/ClassicCraft-1.0/)
